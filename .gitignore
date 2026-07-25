@@ -6,8 +6,12 @@ vendor/bundle/
 .bundle/
 
 # Ignorar logs y archivos temporales
-log/*
-tmp/*
+log/
+**/log/
+**/log/*
+tmp/
+**/tmp/
+**/tmp/*
 *.log
 
 # Ignorar archivos de entorno
