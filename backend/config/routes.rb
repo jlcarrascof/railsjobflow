@@ -6,4 +6,10 @@ Rails.application.routes.draw do
   require 'sidekiq/web'
   require 'sidekiq-status/web'
   mount Sidekiq::Web => '/sidekiq'
+
+  namespace :api do
+    namespace :v1 do
+      get 'health', to: 'health#show'
+    end
+  end
 end
