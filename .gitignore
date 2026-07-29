@@ -1,0 +1,24 @@
+# Ignorar archivos de planificación interna (no suben a GitHub)
+.artifacts/
+
+# Ignorar dependencias de Ruby
+vendor/bundle/
+.bundle/
+
+# Ignorar logs y archivos temporales
+log/
+**/log/
+**/log/*
+tmp/
+**/tmp/
+**/tmp/*
+*.log
+
+# Ignorar archivos de entorno
+.env
+.env.local
+.env.production
+
+# Ignorar IDE
+.vscode/
+.idea/
