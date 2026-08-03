@@ -10,7 +10,7 @@ class WorkflowWorker
   # Executed when all retries are exhausted (equivalent to Oban's on_failure callback in Elixir)
   sidekiq_retries_exhausted do |job, exception|
     job_id = job['args'].first
-    job_record = WorkflowJob.find(job_id)
+    job_record = WorkflowJob.where(_id: job_id).first
     job_record&.mark_failed!("Max retries exhausted: #{exception.message}")
 
     Rails.logger.error({
@@ -21,7 +21,7 @@ class WorkflowWorker
   end
 
   def perform(job_id)
-    job = WorkflowJob.find(job_id)
+    job = WorkflowJob.where(_id: job_id).first
     return unless job  # Guard clause: job may have been deleted
 
     Rails.logger.tagged("WorkflowWorker", job_id) do

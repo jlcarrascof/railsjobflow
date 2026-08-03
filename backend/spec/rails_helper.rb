@@ -9,6 +9,9 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 require 'mongoid-rspec'
 
+# Require supporting ruby files in spec/support/
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+
 RSpec.configure do |config|
   # Explicitly disable ActiveRecord support since we use MongoDB
   config.use_active_record = false
