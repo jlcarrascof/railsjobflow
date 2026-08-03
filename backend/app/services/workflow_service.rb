@@ -69,8 +69,21 @@ class WorkflowService
       # Job currently in progress - return conflict error
       Result.failure("Job with idempotency_key '#{@idempotency_key}' is already in progress (status: #{existing_job.status})", status: :conflict)
     when 'failed'
-      # Previously failed job - allow retry by returning nil to continue creation
-      nil
+      # Previously failed job - reset status and allow retry with same idempotency key
+      existing_job.update!(
+        title: @title,
+        payload: @payload,
+        status: 'pending',
+        error_message: nil,
+        failed_at: nil
+      )
+      WorkflowWorker.perform_async(existing_job.id.to_s)
+      Rails.logger.info({
+        event: 'job_retried',
+        job_id: existing_job.id.to_s,
+        idempotency_key: @idempotency_key
+      }.to_json)
+      Result.success(existing_job)
     end
   end
 end
