@@ -41,6 +41,9 @@ class WorkflowWorker
           result: result
         }.to_json)
 
+        # Trigger webhook notification upon successful completion
+        notify_client_via_webhook(job)
+
       rescue StandardError => e
         job.mark_failed!(e.message)
         Rails.logger.error({
@@ -63,5 +66,16 @@ class WorkflowWorker
 
     sleep(0.1)  # Simulate actual processing work
     { processed: true, payload_keys: payload.is_a?(Hash) ? payload.keys : [] }
+  end
+
+  def notify_client_via_webhook(job)
+    client = ApiClient.where(:webhook_url.ne => nil).first
+    return unless client
+
+    WebhookService.call(
+      job: job,
+      endpoint_url: client.webhook_url,
+      secret: client.webhook_secret
+    )
   end
 end
