@@ -18,7 +18,7 @@ export default function DashboardView() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
         <div className="flex items-center gap-3 text-gray-500 font-medium text-sm">
-          <span className="animate-spin text-blue-600 text-lg">⚙️</span> Conectando con RailsJobFlow...
+          <span className="animate-spin text-blue-600 text-lg">⚙️</span> Connecting to RailsJobFlow...
         </div>
       </div>
     );
@@ -28,13 +28,13 @@ export default function DashboardView() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-md text-center shadow-xs">
-          <p className="text-red-700 font-semibold mb-2">❌ Error de Conexión</p>
+          <p className="text-red-700 font-semibold mb-2">❌ Connection Error</p>
           <p className="text-red-600 text-xs mb-4">{error}</p>
           <button
             onClick={() => refetch()}
-            className="bg-red-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-red-700 transition-colors"
+            className="bg-red-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-red-700 transition-colors cursor-pointer"
           >
-            Reintentar Conexión
+            Retry Connection
           </button>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function DashboardView() {
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs font-medium text-gray-500">Polling cada 3s</span>
+            <span className="text-xs font-medium text-gray-500">Auto-refreshes every 3s</span>
           </div>
         </div>
       </header>
@@ -66,9 +66,9 @@ export default function DashboardView() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'Total Jobs', value: stats.total, color: 'text-gray-900', border: 'border-gray-200' },
-            { label: 'En Ejecución', value: stats.running, color: 'text-blue-600', border: 'border-blue-200' },
-            { label: 'Completados', value: stats.completed, color: 'text-emerald-600', border: 'border-emerald-200' },
-            { label: 'Fallidos', value: stats.failed, color: 'text-rose-600', border: 'border-rose-200' },
+            { label: 'Running', value: stats.running, color: 'text-blue-600', border: 'border-blue-200' },
+            { label: 'Completed', value: stats.completed, color: 'text-emerald-600', border: 'border-emerald-200' },
+            { label: 'Failed', value: stats.failed, color: 'text-rose-600', border: 'border-rose-200' },
           ].map(({ label, value, color, border }) => (
             <div key={label} className={`bg-white border ${border} rounded-xl p-5 shadow-xs text-center`}>
               <p className={`text-3xl font-extrabold ${color}`}>{value}</p>
@@ -84,20 +84,20 @@ export default function DashboardView() {
         <div className="bg-white border border-gray-200 rounded-xl shadow-xs overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-200 bg-gray-50/50 flex justify-between items-center">
             <h2 className="font-semibold text-sm text-gray-800 flex items-center gap-2">
-              <span>📋</span> Lista de Trabajos Registrados
+              <span>📋</span> Registered Jobs List
             </h2>
-            <span className="text-xs text-gray-400 font-mono">{jobs.length} registros</span>
+            <span className="text-xs text-gray-400 font-mono">{jobs.length} records</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 <tr>
-                  <th className="px-5 py-3.5">Título & Detalles</th>
-                  <th className="px-5 py-3.5">Estado</th>
-                  <th className="px-5 py-3.5">Reintentos</th>
-                  <th className="px-5 py-3.5">Duración</th>
-                  <th className="px-5 py-3.5">Fecha Creación</th>
+                  <th className="px-5 py-3.5">Title & Details</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5">Retries</th>
+                  <th className="px-5 py-3.5">Duration</th>
+                  <th className="px-5 py-3.5">Creation Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -130,7 +130,7 @@ export default function DashboardView() {
                       )}
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-xs text-gray-500">
-                      {new Date(job.created_at).toLocaleString('es-VE')}
+                      {new Date(job.created_at).toLocaleString('en-US')}
                     </td>
                   </tr>
                 ))}
@@ -141,8 +141,8 @@ export default function DashboardView() {
           {jobs.length === 0 && (
             <div className="p-12 text-center text-gray-400">
               <span className="text-3xl block mb-2">📥</span>
-              <p className="text-sm font-medium">No hay trabajos registrados todavía.</p>
-              <p className="text-xs text-gray-400 mt-1">Crea el primer trabajo usando el formulario de arriba.</p>
+              <p className="text-sm font-medium">No jobs registered yet.</p>
+              <p className="text-xs text-gray-400 mt-1">Create the first job using the form above.</p>
             </div>
           )}
         </div>
