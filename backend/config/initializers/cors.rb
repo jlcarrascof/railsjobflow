@@ -1,5 +1,5 @@
 # config/initializers/cors.rb
-# Handle Cross-Origin Resource Sharing (CORS) to accept cross-origin requests from React frontend
+# Handle Cross-Origin Resource Sharing (CORS) to accept requests from React frontend origins
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins ENV.fetch('FRONTEND_URL', 'http://localhost:5173'),
@@ -8,6 +8,6 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     resource '*',
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      expose: ['Authorization']
+      expose: ['Authorization', 'X-Idempotency-Key']
   end
 end
