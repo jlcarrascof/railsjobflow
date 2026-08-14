@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Mount Doorkeeper OAuth2 endpoints (/oauth/token, /oauth/authorize)
+  use_doorkeeper
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   get "up" => "rails/health#show", as: :rails_health_check
 

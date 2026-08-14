@@ -21,3 +21,16 @@ Doorkeeper.configure do
     true
   end
 end
+
+# Auto-create development test OAuth application matching frontend .env credentials
+if Rails.env.development?
+  Rails.application.config.after_initialize do
+    Doorkeeper::Application.find_or_create_by!(
+      uid: 'test_client_id'
+    ) do |app|
+      app.name = 'Development Test Client'
+      app.secret = 'test_client_secret'
+      app.redirect_uri = ''
+    end rescue nil
+  end
+end
