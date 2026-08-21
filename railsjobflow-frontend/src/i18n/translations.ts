@@ -59,6 +59,13 @@ export const translations = {
       filterRunning: 'Running',
       filterCompleted: 'Completed',
       filterFailed: 'Failed',
+      page: 'Page',
+      of: 'of',
+      prevPage: 'Previous',
+      nextPage: 'Next',
+      showingText: 'Showing',
+      toText: 'to',
+      totalRecords: 'of total jobs',
     },
     // Create Job View
     createJob: {
@@ -158,6 +165,13 @@ export const translations = {
       filterRunning: 'En Ejecución',
       filterCompleted: 'Completado',
       filterFailed: 'Fallido',
+      page: 'Página',
+      of: 'de',
+      prevPage: 'Anterior',
+      nextPage: 'Siguiente',
+      showingText: 'Mostrando',
+      toText: 'al',
+      totalRecords: 'de tareas totales',
     },
     // Create Job View
     createJob: {
