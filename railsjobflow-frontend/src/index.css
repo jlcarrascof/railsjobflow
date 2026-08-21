@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand-600: #2563eb;
   --color-brand-700: #1d4ed8;
   --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* Ensure smooth dark mode transition across backgrounds and borders */
+html.dark {
+  color-scheme: dark;
 }
