@@ -1,8 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { WorkflowJob, JobStatus } from '@/types';
 import JobStatusBadge from '@/components/JobStatusBadge';
+import { Pagination } from '@/components/Pagination';
 import { useLanguage } from '@/context/LanguageContext';
 import { Search, Filter, KeyRound, Clock, AlertTriangle, Inbox } from 'lucide-react';
+
+const PAGE_SIZE = 4; // 4 tasks per page as requested
 
 interface JobsTableProps {
   jobs: WorkflowJob[];
@@ -12,7 +15,9 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
+  // Filter jobs based on search query and status pill
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
       const matchesSearch =
@@ -25,6 +30,18 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
       return matchesSearch && matchesStatus;
     });
   }, [jobs, searchQuery, selectedStatus]);
+
+  // Reset to page 1 whenever filters or search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedStatus]);
+
+  // Calculate pagination bounds
+  const totalPages = Math.ceil(filteredJobs.length / PAGE_SIZE) || 1;
+  const paginatedJobs = useMemo(() => {
+    const startIdx = (currentPage - 1) * PAGE_SIZE;
+    return filteredJobs.slice(startIdx, startIdx + PAGE_SIZE);
+  }, [filteredJobs, currentPage]);
 
   const statusFilters: { id: string; label: string }[] = [
     { id: 'all', label: t.dashboard.filterAll },
@@ -95,7 +112,7 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {filteredJobs.map((job) => (
+            {paginatedJobs.map((job) => (
               <tr key={job.id} className="hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
                 <td className="px-5 py-4 max-w-sm">
                   <p className="font-bold text-gray-900 dark:text-white text-xs tracking-tight">
@@ -160,6 +177,15 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
           </p>
         </div>
       )}
+
+      {/* Pagination Footer */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredJobs.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
