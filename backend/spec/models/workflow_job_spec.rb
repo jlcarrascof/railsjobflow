@@ -49,6 +49,23 @@ RSpec.describe WorkflowJob, type: :model do
     end
   end
 
+  describe '#retry!' do
+    it 'resets a failed job to pending and increments retries' do
+      job = create(:workflow_job, :failed)
+      expect(job.retry!).to eq(true)
+      job.reload
+      expect(job.status).to eq('pending')
+      expect(job.retries).to eq(1)
+      expect(job.error_message).to be_nil
+    end
+
+    it 'refuses to retry a job that has not failed' do
+      job = create(:workflow_job, :completed)
+      expect(job.retry!).to eq(false)
+      expect(job.reload.status).to eq('completed')
+    end
+  end
+
   describe 'idempotency_key uniqueness' do
     it 'prevents duplicate jobs with the same idempotency_key' do
       key = SecureRandom.uuid

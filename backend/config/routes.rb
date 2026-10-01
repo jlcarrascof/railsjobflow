@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       resources :jobs, only: [:index, :show, :create] do
         member do
           patch :cancel
+          post :retry
         end
       end
       get 'health', to: 'health#show'

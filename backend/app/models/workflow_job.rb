@@ -71,4 +71,14 @@ class WorkflowJob
     update!(status: 'cancelled', completed_at: Time.current)
     true
   end
+
+  # Only a job that has actually failed can be retried. Resets it back to
+  # 'pending' and clears the previous failure so it is re-dispatched clean.
+  def retry!
+    return false unless status == 'failed'
+
+    increment_retries!
+    update!(status: 'pending', error_message: nil, failed_at: nil)
+    true
+  end
 end

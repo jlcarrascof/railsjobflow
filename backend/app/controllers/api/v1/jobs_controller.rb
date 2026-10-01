@@ -25,6 +25,18 @@ module Api
         render json: { error: 'Job not found' }, status: :not_found
       end
 
+      def retry
+        job = WorkflowJob.find(params[:id])
+        if job.retry!
+          WorkflowWorker.perform_async(job.id.to_s)
+          render json: serialize_job(job), status: :ok
+        else
+          render json: { error: 'Only failed jobs can be retried' }, status: :unprocessable_content
+        end
+      rescue Mongoid::Errors::DocumentNotFound
+        render json: { error: 'Job not found' }, status: :not_found
+      end
+
       def create
         result = WorkflowService.call(
           title: params.require(:title),

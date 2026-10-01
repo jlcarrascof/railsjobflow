@@ -120,6 +120,34 @@ RSpec.describe 'Api::V1::Jobs', type: :request do
     end
   end
 
+  describe 'POST /api/v1/jobs/:id/retry' do
+    it 'retries a failed job, resetting it to pending' do
+      job = create(:workflow_job, :failed)
+
+      post "/api/v1/jobs/#{job.id}/retry", headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+      expect(json['status']).to eq('pending')
+      expect(json['retries']).to eq(1)
+      expect(json['error_message']).to be_nil
+    end
+
+    it 'refuses to retry a job that has not failed' do
+      job = create(:workflow_job, :completed)
+
+      post "/api/v1/jobs/#{job.id}/retry", headers: auth_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(job.reload.status).to eq('completed')
+    end
+
+    it 'returns 404 if job does not exist' do
+      post '/api/v1/jobs/000000000000000000000000/retry', headers: auth_headers
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe 'Rate limiting' do
     it 'configures Rack::Attack throttle rule for api/token' do
       expect(Rack::Attack.throttles).to have_key('api/token')
