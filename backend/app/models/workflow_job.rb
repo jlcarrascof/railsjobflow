@@ -24,7 +24,7 @@ class WorkflowJob
   # Validations
   validates :title, presence: true
   validates :status, inclusion: {
-    in: %w[pending running completed failed],
+    in: %w[pending running completed failed cancelled],
     message: "%{value} is not a valid status"
   }
   validates :idempotency_key,
@@ -36,6 +36,7 @@ class WorkflowJob
   scope :running,   -> { where(status: 'running') }
   scope :completed, -> { where(status: 'completed') }
   scope :failed,    -> { where(status: 'failed') }
+  scope :cancelled, -> { where(status: 'cancelled') }
   scope :recent,    -> { order(created_at: :desc) }
 
   # Helper methods for status transitions
@@ -58,5 +59,16 @@ class WorkflowJob
 
   def increment_retries!
     inc(retries: 1)
+  end
+
+  # A job can only be cancelled before Sidekiq has picked it up (status
+  # 'pending'). A 'running' job was already dispatched to the worker and
+  # cancelling it mid-execution would require cooperative interruption
+  # logic inside the job itself, which is out of scope here.
+  def cancel!
+    return false unless status == 'pending'
+
+    update!(status: 'cancelled', completed_at: Time.current)
+    true
   end
 end

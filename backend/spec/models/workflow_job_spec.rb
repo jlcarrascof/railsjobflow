@@ -34,6 +34,21 @@ RSpec.describe WorkflowJob, type: :model do
     end
   end
 
+  describe '#cancel!' do
+    it 'cancels a pending job and returns true' do
+      job = create(:workflow_job)
+      expect(job.cancel!).to eq(true)
+      expect(job.reload.status).to eq('cancelled')
+      expect(job.completed_at).to be_present
+    end
+
+    it 'refuses to cancel a running job and returns false' do
+      job = create(:workflow_job, :running)
+      expect(job.cancel!).to eq(false)
+      expect(job.reload.status).to eq('running')
+    end
+  end
+
   describe 'idempotency_key uniqueness' do
     it 'prevents duplicate jobs with the same idempotency_key' do
       key = SecureRandom.uuid
