@@ -36,6 +36,10 @@ module Backend
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # Enable Cookies and Session middleware required by Sidekiq::Web UI in API mode
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore, key: '_railsjobflow_session'
+
     # Enable Rack::Attack middleware for rate limiting and request throttling
     config.middleware.use Rack::Attack
   end

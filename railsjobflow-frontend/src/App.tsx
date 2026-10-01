@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchOAuthToken } from '@/api/client';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { LanguageProvider, useLanguage } from '@/context/LanguageContext';
+import { LoginView } from '@/views/LoginView';
 import DashboardView from '@/views/DashboardView';
 
-export default function App() {
+const AppContent: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
+
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,19 +19,37 @@ export default function App() {
       .then(() => setReady(true))
       .catch((e: unknown) => {
         const err = e as { message?: string; response?: { data?: { error?: string } } };
-        setError('Unable to connect to OAuth2 API: ' + (err.response?.data?.error || err.message));
+        setError(err.response?.data?.error || err.message || 'Error connecting to OAuth2');
       });
   }, []);
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-md text-center shadow-xs">
-          <p className="text-red-700 font-semibold mb-2">🔒 OAuth2 Authentication Error</p>
-          <p className="text-red-600 text-xs mb-4">{error}</p>
-          <p className="text-xs text-gray-500">
-            Ensure the Rails API server is running at <code className="bg-red-100 px-1 py-0.5 rounded text-red-800 font-mono">http://localhost:3001</code>.
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-8 transition-colors">
+        <div className="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800 rounded-2xl p-6 max-w-md text-center shadow-lg">
+          <p className="text-red-600 dark:text-red-400 font-semibold mb-2 flex items-center justify-center gap-1.5">
+            <span>🔒</span> {t.auth.authErrorTitle}
           </p>
+          <p className="text-red-500 dark:text-red-300 text-xs mb-4 font-mono">{error}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            {t.auth.authErrorHelp}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              setReady(false);
+              fetchOAuthToken()
+                .then(() => setReady(true))
+                .catch((e: unknown) => {
+                  const err = e as { message?: string; response?: { data?: { error?: string } } };
+                  setError(err.response?.data?.error || err.message || 'Error connecting to OAuth2');
+                });
+            }}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-medium transition-all cursor-pointer shadow-xs"
+          >
+            🔄 {t.auth.retryBtn}
+          </button>
         </div>
       </div>
     );
@@ -32,14 +57,32 @@ export default function App() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="flex items-center gap-3 text-gray-600 font-medium text-sm">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-8 transition-colors">
+        <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 font-medium text-sm">
           <span className="animate-spin text-blue-600 text-xl">⚡</span>
-          <span>Authenticating OAuth2 client and connecting to backend...</span>
+          <span>{t.auth.authenticatingOAuth}</span>
         </div>
       </div>
     );
   }
 
+  // If user is not authenticated yet, display LoginView
+  if (!isAuthenticated) {
+    return <LoginView />;
+  }
+
+  // If authenticated, display the Dashboard
   return <DashboardView />;
+};
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  );
 }
