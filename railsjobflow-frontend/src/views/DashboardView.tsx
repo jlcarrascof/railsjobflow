@@ -56,7 +56,7 @@ export default function DashboardView() {
       {currentTab === 'dashboard' && (
         <div>
           <ObservabilityCards stats={stats} />
-          <JobsTable jobs={jobs} />
+          <JobsTable jobs={jobs} onRefetch={refetch} />
         </div>
       )}
 

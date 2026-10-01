@@ -73,5 +73,7 @@ export const jobsApi = {
         : {},
     }),
 
+  cancel: (id: string) => apiClient.patch<WorkflowJob>(`/api/v1/jobs/${id}/cancel`),
+
   health: () => apiClient.get('/api/v1/health'),
 };

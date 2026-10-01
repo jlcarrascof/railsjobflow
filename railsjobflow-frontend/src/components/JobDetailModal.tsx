@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import type { WorkflowJob, JobStatus } from '@/types';
 import JobStatusBadge from '@/components/JobStatusBadge';
+import { jobsApi } from '@/api/client';
 import { useLanguage } from '@/context/LanguageContext';
-import { X, KeyRound, Clock, AlertTriangle, CheckCircle2, Circle, Loader2, XCircle } from 'lucide-react';
+import { X, KeyRound, Clock, AlertTriangle, CheckCircle2, Circle, Loader2, XCircle, Ban } from 'lucide-react';
 
 interface JobDetailModalProps {
   job: WorkflowJob | null;
   onClose: () => void;
+  onCancelled?: () => void;
 }
 
 const TIMELINE_ICONS: Record<string, React.ElementType> = {
@@ -15,10 +18,26 @@ const TIMELINE_ICONS: Record<string, React.ElementType> = {
   failed: XCircle,
 };
 
-export function JobDetailModal({ job, onClose }: JobDetailModalProps) {
+export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProps) {
   const { t, language } = useLanguage();
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   if (!job) return null;
+
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    setCancelError(null);
+    try {
+      await jobsApi.cancel(job.id);
+      onCancelled?.();
+      onClose();
+    } catch {
+      setCancelError(t.jobDetail.cancelError);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   const formatDate = (iso: string | null) =>
     iso
@@ -141,6 +160,30 @@ export function JobDetailModal({ job, onClose }: JobDetailModalProps) {
                 : t.jobDetail.noPayload}
             </pre>
           </div>
+
+          {/* Actions */}
+          {(job.status === 'pending' || job.status === 'running') && (
+            <div>
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={isCancelling || job.status === 'running'}
+                title={job.status === 'running' ? t.jobDetail.cancelOnlyPending : undefined}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
+              >
+                <Ban className="w-3.5 h-3.5" />
+                {isCancelling ? t.jobDetail.cancellingBtn : t.jobDetail.cancelBtn}
+              </button>
+              {job.status === 'running' && (
+                <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
+                  {t.jobDetail.cancelOnlyPending}
+                </p>
+              )}
+              {cancelError && (
+                <p className="text-rose-500 text-[11px] mt-2 text-center">{cancelError}</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -10,9 +10,10 @@ const PAGE_SIZE = 4; // 4 tasks per page as requested
 
 interface JobsTableProps {
   jobs: WorkflowJob[];
+  onRefetch?: () => void;
 }
 
-export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
+export const JobsTable: React.FC<JobsTableProps> = ({ jobs, onRefetch }) => {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -200,7 +201,11 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
         onPageChange={setCurrentPage}
       />
 
-      <JobDetailModal job={selectedJob} onClose={() => setSelectedJobId(null)} />
+      <JobDetailModal
+        job={selectedJob}
+        onClose={() => setSelectedJobId(null)}
+        onCancelled={onRefetch}
+      />
     </div>
   );
 };

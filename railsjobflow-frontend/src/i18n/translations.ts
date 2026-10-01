@@ -83,6 +83,10 @@ export const translations = {
       retriesLabel: 'Retries',
       durationLabel: 'Duration',
       notReached: 'Not reached yet',
+      cancelBtn: 'Cancel Job',
+      cancellingBtn: 'Cancelling...',
+      cancelOnlyPending: 'Only pending jobs can be cancelled',
+      cancelError: 'Could not cancel the job',
     },
     // Create Job View
     createJob: {
@@ -206,6 +210,10 @@ export const translations = {
       retriesLabel: 'Reintentos',
       durationLabel: 'Duración',
       notReached: 'Aún no alcanzado',
+      cancelBtn: 'Cancelar Trabajo',
+      cancellingBtn: 'Cancelando...',
+      cancelOnlyPending: 'Solo se pueden cancelar trabajos pendientes',
+      cancelError: 'No se pudo cancelar el trabajo',
     },
     // Create Job View
     createJob: {
