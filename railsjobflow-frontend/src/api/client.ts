@@ -75,5 +75,7 @@ export const jobsApi = {
 
   cancel: (id: string) => apiClient.patch<WorkflowJob>(`/api/v1/jobs/${id}/cancel`),
 
+  retry: (id: string) => apiClient.post<WorkflowJob>(`/api/v1/jobs/${id}/retry`),
+
   health: () => apiClient.get('/api/v1/health'),
 };

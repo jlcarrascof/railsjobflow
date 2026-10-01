@@ -87,6 +87,9 @@ export const translations = {
       cancellingBtn: 'Cancelling...',
       cancelOnlyPending: 'Only pending jobs can be cancelled',
       cancelError: 'Could not cancel the job',
+      retryBtn: 'Retry Job',
+      retryingBtn: 'Retrying...',
+      retryError: 'Could not retry the job',
     },
     // Create Job View
     createJob: {
@@ -214,6 +217,9 @@ export const translations = {
       cancellingBtn: 'Cancelando...',
       cancelOnlyPending: 'Solo se pueden cancelar trabajos pendientes',
       cancelError: 'No se pudo cancelar el trabajo',
+      retryBtn: 'Reintentar Trabajo',
+      retryingBtn: 'Reintentando...',
+      retryError: 'No se pudo reintentar el trabajo',
     },
     // Create Job View
     createJob: {

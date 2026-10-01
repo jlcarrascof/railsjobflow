@@ -3,7 +3,7 @@ import type { WorkflowJob, JobStatus } from '@/types';
 import JobStatusBadge from '@/components/JobStatusBadge';
 import { jobsApi } from '@/api/client';
 import { useLanguage } from '@/context/LanguageContext';
-import { X, KeyRound, Clock, AlertTriangle, CheckCircle2, Circle, Loader2, XCircle, Ban } from 'lucide-react';
+import { X, KeyRound, Clock, AlertTriangle, CheckCircle2, Circle, Loader2, XCircle, Ban, RotateCcw } from 'lucide-react';
 
 interface JobDetailModalProps {
   job: WorkflowJob | null;
@@ -22,6 +22,8 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
   const { t, language } = useLanguage();
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
 
   if (!job) return null;
 
@@ -36,6 +38,20 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
       setCancelError(t.jobDetail.cancelError);
     } finally {
       setIsCancelling(false);
+    }
+  };
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    setRetryError(null);
+    try {
+      await jobsApi.retry(job.id);
+      onCancelled?.();
+      onClose();
+    } catch {
+      setRetryError(t.jobDetail.retryError);
+    } finally {
+      setIsRetrying(false);
     }
   };
 
@@ -181,6 +197,23 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
               )}
               {cancelError && (
                 <p className="text-rose-500 text-[11px] mt-2 text-center">{cancelError}</p>
+              )}
+            </div>
+          )}
+
+          {job.status === 'failed' && (
+            <div>
+              <button
+                type="button"
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                {isRetrying ? t.jobDetail.retryingBtn : t.jobDetail.retryBtn}
+              </button>
+              {retryError && (
+                <p className="text-rose-500 text-[11px] mt-2 text-center">{retryError}</p>
               )}
             </div>
           )}
