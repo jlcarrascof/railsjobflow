@@ -4,6 +4,7 @@ export interface WorkflowJob {
   id: string;
   title: string;
   status: JobStatus;
+  payload: Record<string, unknown>;
   retries: number;
   max_retries: number;
   idempotency_key: string | null;

@@ -67,6 +67,23 @@ export const translations = {
       toText: 'to',
       totalRecords: 'of total jobs',
     },
+    // Job Detail Modal
+    jobDetail: {
+      title: 'Job Detail',
+      closeBtn: 'Close',
+      timelineTitle: 'Status Timeline',
+      createdAt: 'Created',
+      startedAt: 'Started',
+      completedAt: 'Completed',
+      failedAt: 'Failed',
+      payloadTitle: 'Payload',
+      noPayload: 'Empty payload ({})',
+      errorTitle: 'Error Message',
+      idempotencyKey: 'Idempotency Key',
+      retriesLabel: 'Retries',
+      durationLabel: 'Duration',
+      notReached: 'Not reached yet',
+    },
     // Create Job View
     createJob: {
       pageTitle: 'Create New Background Job',
@@ -172,6 +189,23 @@ export const translations = {
       showingText: 'Mostrando',
       toText: 'al',
       totalRecords: 'de tareas totales',
+    },
+    // Job Detail Modal
+    jobDetail: {
+      title: 'Detalle del Trabajo',
+      closeBtn: 'Cerrar',
+      timelineTitle: 'Línea de Tiempo del Estado',
+      createdAt: 'Creado',
+      startedAt: 'Iniciado',
+      completedAt: 'Completado',
+      failedAt: 'Fallido',
+      payloadTitle: 'Payload',
+      noPayload: 'Payload vacío ({})',
+      errorTitle: 'Mensaje de Error',
+      idempotencyKey: 'Clave de Idempotencia',
+      retriesLabel: 'Reintentos',
+      durationLabel: 'Duración',
+      notReached: 'Aún no alcanzado',
     },
     // Create Job View
     createJob: {
