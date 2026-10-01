@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { WorkflowJob, JobStatus } from '@/types';
 import JobStatusBadge from '@/components/JobStatusBadge';
 import { Pagination } from '@/components/Pagination';
+import { JobDetailModal } from '@/components/JobDetailModal';
 import { useLanguage } from '@/context/LanguageContext';
 import { Search, Filter, KeyRound, Clock, AlertTriangle, Inbox } from 'lucide-react';
 
@@ -16,6 +17,7 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   // Filter jobs based on search query and status pill
   const filteredJobs = useMemo(() => {
@@ -42,6 +44,13 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
     const startIdx = (currentPage - 1) * PAGE_SIZE;
     return filteredJobs.slice(startIdx, startIdx + PAGE_SIZE);
   }, [filteredJobs, currentPage]);
+
+  // Look up the selected job from the full list (not the filtered/paginated
+  // slice) so the modal keeps showing it even if filters change while open.
+  const selectedJob = useMemo(
+    () => jobs.find((job) => job.id === selectedJobId) ?? null,
+    [jobs, selectedJobId]
+  );
 
   const statusFilters: { id: string; label: string }[] = [
     { id: 'all', label: t.dashboard.filterAll },
@@ -113,7 +122,11 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {paginatedJobs.map((job) => (
-              <tr key={job.id} className="hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
+              <tr
+                key={job.id}
+                onClick={() => setSelectedJobId(job.id)}
+                className="hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+              >
                 <td className="px-5 py-4 max-w-sm">
                   <p className="font-bold text-gray-900 dark:text-white text-xs tracking-tight">
                     {job.title}
@@ -186,6 +199,8 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs }) => {
         pageSize={PAGE_SIZE}
         onPageChange={setCurrentPage}
       />
+
+      <JobDetailModal job={selectedJob} onClose={() => setSelectedJobId(null)} />
     </div>
   );
 };
