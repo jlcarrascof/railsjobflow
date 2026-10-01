@@ -12,7 +12,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :jobs, only: [:index, :show, :create]
+      resources :jobs, only: [:index, :show, :create] do
+        member do
+          patch :cancel
+        end
+      end
       get 'health', to: 'health#show'
     end
   end

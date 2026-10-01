@@ -94,6 +94,32 @@ RSpec.describe 'Api::V1::Jobs', type: :request do
     end
   end
 
+  describe 'PATCH /api/v1/jobs/:id/cancel' do
+    it 'cancels a pending job' do
+      job = create(:workflow_job)
+
+      patch "/api/v1/jobs/#{job.id}/cancel", headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+      expect(json['status']).to eq('cancelled')
+    end
+
+    it 'refuses to cancel a running job' do
+      job = create(:workflow_job, :running)
+
+      patch "/api/v1/jobs/#{job.id}/cancel", headers: auth_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(job.reload.status).to eq('running')
+    end
+
+    it 'returns 404 if job does not exist' do
+      patch '/api/v1/jobs/000000000000000000000000/cancel', headers: auth_headers
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe 'Rate limiting' do
     it 'configures Rack::Attack throttle rule for api/token' do
       expect(Rack::Attack.throttles).to have_key('api/token')
