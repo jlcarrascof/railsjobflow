@@ -35,6 +35,7 @@ module Api
           id: job.id.to_s,
           title: job.title,
           status: job.status,
+          payload: job.payload,
           retries: job.retries,
           max_retries: job.max_retries,
           idempotency_key: job.idempotency_key,

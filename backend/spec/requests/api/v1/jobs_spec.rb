@@ -79,6 +79,15 @@ RSpec.describe 'Api::V1::Jobs', type: :request do
       expect(json['duration_ms']).to be_present
     end
 
+    it 'includes the full payload for the job detail view' do
+      job = create(:workflow_job, payload: { 'amount' => 100, 'currency' => 'USD' })
+
+      get "/api/v1/jobs/#{job.id}", headers: auth_headers
+
+      json = JSON.parse(response.body)
+      expect(json['payload']).to eq({ 'amount' => 100, 'currency' => 'USD' })
+    end
+
     it 'returns 404 if job does not exist' do
       get '/api/v1/jobs/000000000000000000000000', headers: auth_headers
       expect(response).to have_http_status(:not_found)
