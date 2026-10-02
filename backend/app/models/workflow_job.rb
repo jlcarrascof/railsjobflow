@@ -8,6 +8,7 @@ class WorkflowJob
   field :status,          type: String,   default: 'pending'
   field :payload,         type: Hash,     default: {}
   field :idempotency_key, type: String
+  field :api_client_id,   type: String
   field :retries,         type: Integer,  default: 0
   field :max_retries,     type: Integer,  default: 3
   field :error_message,   type: String

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
           post :retry
         end
       end
+      resources :api_clients, only: [:index, :create, :update]
       get 'health', to: 'health#show'
     end
   end

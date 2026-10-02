@@ -41,7 +41,8 @@ module Api
         result = WorkflowService.call(
           title: params.require(:title),
           payload: params[:payload]&.to_unsafe_h || {},
-          idempotency_key: request.headers['X-Idempotency-Key']
+          idempotency_key: request.headers['X-Idempotency-Key'],
+          api_client_id: current_client&.id&.to_s
         )
 
         if result.success?

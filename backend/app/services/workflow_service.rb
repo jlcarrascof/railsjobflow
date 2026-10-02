@@ -1,14 +1,15 @@
 # app/services/workflow_service.rb
 # Service Object orchestrating job creation, idempotency validation, and Sidekiq queuing
 class WorkflowService
-  def self.call(title:, payload: {}, idempotency_key: nil)
-    new(title: title, payload: payload, idempotency_key: idempotency_key).call
+  def self.call(title:, payload: {}, idempotency_key: nil, api_client_id: nil)
+    new(title: title, payload: payload, idempotency_key: idempotency_key, api_client_id: api_client_id).call
   end
 
-  def initialize(title:, payload:, idempotency_key:)
+  def initialize(title:, payload:, idempotency_key:, api_client_id: nil)
     @title = title
     @payload = payload
     @idempotency_key = idempotency_key
+    @api_client_id = api_client_id
   end
 
   def call
@@ -23,6 +24,7 @@ class WorkflowService
       title: @title,
       payload: @payload,
       idempotency_key: @idempotency_key,
+      api_client_id: @api_client_id,
       status: 'pending'
     )
 

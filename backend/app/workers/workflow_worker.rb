@@ -69,8 +69,10 @@ class WorkflowWorker
   end
 
   def notify_client_via_webhook(job)
-    client = ApiClient.where(:webhook_url.ne => nil).first
-    return unless client
+    return if job.api_client_id.blank?
+
+    client = ApiClient.where(id: job.api_client_id).first
+    return unless client&.webhook_url.present?
 
     WebhookService.call(
       job: job,
