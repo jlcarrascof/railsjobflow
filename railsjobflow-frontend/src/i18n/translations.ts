@@ -42,6 +42,7 @@ export const translations = {
     dashboard: {
       overviewTitle: 'System Observability Overview',
       totalJobs: 'Total Jobs',
+      pending: 'Pending',
       running: 'In Execution',
       completed: 'Completed',
       failed: 'Failed',
@@ -186,6 +187,7 @@ export const translations = {
     dashboard: {
       overviewTitle: 'Observabilidad del Sistema en Vivo',
       totalJobs: 'Total Trabajos',
+      pending: 'Pendientes',
       running: 'En Ejecución',
       completed: 'Completados',
       failed: 'Fallidos',
