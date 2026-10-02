@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { WorkflowJob, CreateJobPayload } from '@/types';
+import type { WorkflowJob, CreateJobPayload, ApiClient, CreateApiClientPayload, JobsListResponse } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -62,7 +62,8 @@ export async function fetchOAuthToken(): Promise<string> {
 
 // Jobs API service endpoints
 export const jobsApi = {
-  list: () => apiClient.get<WorkflowJob[]>('/api/v1/jobs'),
+  list: (page: number = 1, perPage: number = 25) =>
+    apiClient.get<JobsListResponse>('/api/v1/jobs', { params: { page, per_page: perPage } }),
 
   get: (id: string) => apiClient.get<WorkflowJob>(`/api/v1/jobs/${id}`),
 
@@ -73,5 +74,20 @@ export const jobsApi = {
         : {},
     }),
 
+  cancel: (id: string) => apiClient.patch<WorkflowJob>(`/api/v1/jobs/${id}/cancel`),
+
+  retry: (id: string) => apiClient.post<WorkflowJob>(`/api/v1/jobs/${id}/retry`),
+
   health: () => apiClient.get('/api/v1/health'),
+};
+
+// ApiClients API service endpoints (OAuth2 clients + webhook configuration)
+export const apiClientsApi = {
+  list: () => apiClient.get<ApiClient[]>('/api/v1/api_clients'),
+
+  create: (data: CreateApiClientPayload) =>
+    apiClient.post<ApiClient>('/api/v1/api_clients', { api_client: data }),
+
+  update: (id: string, data: Partial<CreateApiClientPayload>) =>
+    apiClient.patch<ApiClient>(`/api/v1/api_clients/${id}`, { api_client: data }),
 };

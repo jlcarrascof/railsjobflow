@@ -10,16 +10,12 @@ import type { NavigationTab } from '@/components/Sidebar';
 
 export default function DashboardView() {
   const [currentTab, setCurrentTab] = useState<NavigationTab>('dashboard');
-  const { jobs, loading, error, refetch } = useJobs();
+  const [page, setPage] = useState(1);
+  const { jobs, pagination, statusCounts, loading, error, refetch } = useJobs(page, 4);
 
-  // Calculate live observability metrics
-  const stats = {
-    total: jobs.length,
-    pending: jobs.filter((j) => j.status === 'pending').length,
-    running: jobs.filter((j) => j.status === 'running').length,
-    completed: jobs.filter((j) => j.status === 'completed').length,
-    failed: jobs.filter((j) => j.status === 'failed').length,
-  };
+  // Live observability metrics come from the backend's system-wide
+  // status_counts, not from the current (paginated) `jobs` page.
+  const stats = statusCounts;
 
   if (loading && jobs.length === 0) {
     return (
@@ -56,7 +52,7 @@ export default function DashboardView() {
       {currentTab === 'dashboard' && (
         <div>
           <ObservabilityCards stats={stats} />
-          <JobsTable jobs={jobs} />
+          <JobsTable jobs={jobs} pagination={pagination} onPageChange={setPage} onRefetch={refetch} />
         </div>
       )}
 
