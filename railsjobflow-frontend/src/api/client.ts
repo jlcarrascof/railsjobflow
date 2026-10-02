@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { WorkflowJob, CreateJobPayload } from '@/types';
+import type { WorkflowJob, CreateJobPayload, ApiClient, CreateApiClientPayload } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -78,4 +78,15 @@ export const jobsApi = {
   retry: (id: string) => apiClient.post<WorkflowJob>(`/api/v1/jobs/${id}/retry`),
 
   health: () => apiClient.get('/api/v1/health'),
+};
+
+// ApiClients API service endpoints (OAuth2 clients + webhook configuration)
+export const apiClientsApi = {
+  list: () => apiClient.get<ApiClient[]>('/api/v1/api_clients'),
+
+  create: (data: CreateApiClientPayload) =>
+    apiClient.post<ApiClient>('/api/v1/api_clients', { api_client: data }),
+
+  update: (id: string, data: Partial<CreateApiClientPayload>) =>
+    apiClient.patch<ApiClient>(`/api/v1/api_clients/${id}`, { api_client: data }),
 };

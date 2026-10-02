@@ -21,3 +21,16 @@ export interface CreateJobPayload {
   payload: Record<string, unknown>;
   idempotency_key?: string;
 }
+
+export interface ApiClient {
+  id: string;
+  name: string;
+  api_key: string;
+  webhook_url: string | null;
+  webhook_secret: string | null;
+}
+
+export interface CreateApiClientPayload {
+  name: string;
+  webhook_url?: string;
+}
