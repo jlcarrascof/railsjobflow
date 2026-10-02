@@ -1,26 +1,26 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import type { WorkflowJob, JobStatus } from '@/types';
+import React, { useState, useMemo } from 'react';
+import type { WorkflowJob, JobStatus, JobsPagination } from '@/types';
 import JobStatusBadge from '@/components/JobStatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { JobDetailModal } from '@/components/JobDetailModal';
 import { useLanguage } from '@/context/LanguageContext';
 import { Search, Filter, KeyRound, Clock, AlertTriangle, Inbox } from 'lucide-react';
 
-const PAGE_SIZE = 4; // 4 tasks per page as requested
-
 interface JobsTableProps {
   jobs: WorkflowJob[];
+  pagination: JobsPagination | null;
+  onPageChange: (page: number) => void;
   onRefetch?: () => void;
 }
 
-export const JobsTable: React.FC<JobsTableProps> = ({ jobs, onRefetch }) => {
+export const JobsTable: React.FC<JobsTableProps> = ({ jobs, pagination, onPageChange, onRefetch }) => {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-  // Filter jobs based on search query and status pill
+  // Search/status filters apply only within the current server-fetched page,
+  // since job listing itself is paginated server-side (Sprint 6, Part E).
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
       const matchesSearch =
@@ -33,18 +33,6 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs, onRefetch }) => {
       return matchesSearch && matchesStatus;
     });
   }, [jobs, searchQuery, selectedStatus]);
-
-  // Reset to page 1 whenever filters or search query changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedStatus]);
-
-  // Calculate pagination bounds
-  const totalPages = Math.ceil(filteredJobs.length / PAGE_SIZE) || 1;
-  const paginatedJobs = useMemo(() => {
-    const startIdx = (currentPage - 1) * PAGE_SIZE;
-    return filteredJobs.slice(startIdx, startIdx + PAGE_SIZE);
-  }, [filteredJobs, currentPage]);
 
   // Look up the selected job from the full list (not the filtered/paginated
   // slice) so the modal keeps showing it even if filters change while open.
@@ -122,7 +110,7 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs, onRefetch }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedJobs.map((job) => (
+            {filteredJobs.map((job) => (
               <tr
                 key={job.id}
                 onClick={() => setSelectedJobId(job.id)}
@@ -192,14 +180,16 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs, onRefetch }) => {
         </div>
       )}
 
-      {/* Pagination Footer */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={filteredJobs.length}
-        pageSize={PAGE_SIZE}
-        onPageChange={setCurrentPage}
-      />
+      {/* Pagination Footer (server-side) */}
+      {pagination && (
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={pagination.total_pages}
+          totalItems={pagination.total_count}
+          pageSize={pagination.per_page}
+          onPageChange={onPageChange}
+        />
+      )}
 
       <JobDetailModal
         job={selectedJob}

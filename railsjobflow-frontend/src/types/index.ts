@@ -34,3 +34,24 @@ export interface CreateApiClientPayload {
   name: string;
   webhook_url?: string;
 }
+
+export interface JobsPagination {
+  page: number;
+  per_page: number;
+  total_count: number;
+  total_pages: number;
+}
+
+export interface JobsStatusCounts {
+  total: number;
+  pending: number;
+  running: number;
+  completed: number;
+  failed: number;
+}
+
+export interface JobsListResponse {
+  jobs: WorkflowJob[];
+  pagination: JobsPagination;
+  status_counts: JobsStatusCounts;
+}

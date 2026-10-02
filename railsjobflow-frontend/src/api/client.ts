@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { WorkflowJob, CreateJobPayload, ApiClient, CreateApiClientPayload } from '@/types';
+import type { WorkflowJob, CreateJobPayload, ApiClient, CreateApiClientPayload, JobsListResponse } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -62,7 +62,8 @@ export async function fetchOAuthToken(): Promise<string> {
 
 // Jobs API service endpoints
 export const jobsApi = {
-  list: () => apiClient.get<WorkflowJob[]>('/api/v1/jobs'),
+  list: (page: number = 1, perPage: number = 25) =>
+    apiClient.get<JobsListResponse>('/api/v1/jobs', { params: { page, per_page: perPage } }),
 
   get: (id: string) => apiClient.get<WorkflowJob>(`/api/v1/jobs/${id}`),
 
