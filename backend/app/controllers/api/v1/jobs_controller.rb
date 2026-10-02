@@ -3,8 +3,22 @@ module Api
   module V1
     class JobsController < ApplicationController
       def index
-        jobs = WorkflowJob.recent.limit(50)
-        render json: jobs.map { |j| serialize_job(j) }
+        page = [params.fetch(:page, 1).to_i, 1].max
+        per_page = params.fetch(:per_page, 25).to_i.clamp(1, 100)
+
+        jobs = WorkflowJob.recent
+        total = jobs.count
+        paginated = jobs.skip((page - 1) * per_page).limit(per_page)
+
+        render json: {
+          jobs: paginated.map { |j| serialize_job(j) },
+          pagination: {
+            page: page,
+            per_page: per_page,
+            total_count: total,
+            total_pages: total.zero? ? 1 : (total.to_f / per_page).ceil
+          }
+        }
       end
 
       def show

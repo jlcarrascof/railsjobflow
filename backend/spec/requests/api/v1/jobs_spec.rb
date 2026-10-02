@@ -67,6 +67,41 @@ RSpec.describe 'Api::V1::Jobs', type: :request do
     end
   end
 
+  describe 'GET /api/v1/jobs' do
+    it 'returns paginated jobs with pagination metadata' do
+      create_list(:workflow_job, 3)
+
+      get '/api/v1/jobs', params: { page: 1, per_page: 2 }, headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+      expect(json['jobs'].size).to eq(2)
+      expect(json['pagination']).to include(
+        'page' => 1, 'per_page' => 2, 'total_count' => 3, 'total_pages' => 2
+      )
+    end
+
+    it 'returns the second page correctly' do
+      create_list(:workflow_job, 3)
+
+      get '/api/v1/jobs', params: { page: 2, per_page: 2 }, headers: auth_headers
+
+      json = JSON.parse(response.body)
+      expect(json['jobs'].size).to eq(1)
+      expect(json['pagination']['page']).to eq(2)
+    end
+
+    it 'defaults to page 1 and per_page 25 when not specified' do
+      create_list(:workflow_job, 3)
+
+      get '/api/v1/jobs', headers: auth_headers
+
+      json = JSON.parse(response.body)
+      expect(json['jobs'].size).to eq(3)
+      expect(json['pagination']).to include('page' => 1, 'per_page' => 25)
+    end
+  end
+
   describe 'GET /api/v1/jobs/:id' do
     it 'returns job with observability fields' do
       job = create(:workflow_job, :completed)
