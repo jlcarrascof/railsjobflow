@@ -100,6 +100,21 @@ RSpec.describe 'Api::V1::Jobs', type: :request do
       expect(json['jobs'].size).to eq(3)
       expect(json['pagination']).to include('page' => 1, 'per_page' => 25)
     end
+
+    it 'returns status_counts reflecting ALL jobs, not just the current page' do
+      create(:workflow_job, :completed)
+      create(:workflow_job, :failed)
+      create(:workflow_job, :running)
+      create(:workflow_job)
+
+      get '/api/v1/jobs', params: { page: 1, per_page: 1 }, headers: auth_headers
+
+      json = JSON.parse(response.body)
+      expect(json['jobs'].size).to eq(1)
+      expect(json['status_counts']).to eq(
+        'total' => 4, 'pending' => 1, 'running' => 1, 'completed' => 1, 'failed' => 1
+      )
+    end
   end
 
   describe 'GET /api/v1/jobs/:id' do

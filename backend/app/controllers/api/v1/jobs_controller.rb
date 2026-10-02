@@ -17,7 +17,8 @@ module Api
             per_page: per_page,
             total_count: total,
             total_pages: total.zero? ? 1 : (total.to_f / per_page).ceil
-          }
+          },
+          status_counts: status_counts
         }
       end
 
@@ -67,6 +68,18 @@ module Api
       end
 
       private
+
+      # Aggregate counts across ALL jobs (independent of the current page) so
+      # the dashboard's observability cards reflect true system-wide totals.
+      def status_counts
+        {
+          total: WorkflowJob.count,
+          pending: WorkflowJob.pending.count,
+          running: WorkflowJob.running.count,
+          completed: WorkflowJob.completed.count,
+          failed: WorkflowJob.failed.count
+        }
+      end
 
       def serialize_job(job)
         {
