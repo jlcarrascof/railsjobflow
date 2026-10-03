@@ -18,6 +18,13 @@ const TIMELINE_ICONS: Record<string, React.ElementType> = {
   failed: XCircle,
 };
 
+const TIMELINE_COLORS: Record<string, string> = {
+  created: 'text-blue-600 dark:text-blue-400',
+  started: 'text-amber-500 dark:text-amber-400',
+  completed: 'text-emerald-600 dark:text-emerald-400',
+  failed: 'text-rose-600 dark:text-rose-400',
+};
+
 type DetailTab = 'overview' | 'payload' | 'timeline' | 'error' | 'retries';
 
 export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProps) {
@@ -176,7 +183,7 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
                     <li key={step.key} className="relative">
                       <Icon
                         className={`w-3.5 h-3.5 absolute -left-[21px] top-0.5 ${
-                          reached ? 'text-blue-600 dark:text-blue-400' : 'text-gray-300 dark:text-gray-700'
+                          reached ? TIMELINE_COLORS[step.iconKey] : 'text-gray-300 dark:text-gray-700'
                         }`}
                       />
                       <p className={`font-semibold ${reached ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600'}`}>
