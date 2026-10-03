@@ -32,7 +32,7 @@ export const SidekiqMetricsView: React.FC<SidekiqMetricsViewProps> = ({ stats })
         </div>
 
         <a
-          href="http://localhost:3001/sidekiq"
+          href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/sidekiq`}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
