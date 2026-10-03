@@ -91,6 +91,11 @@ export const translations = {
       retryBtn: 'Retry Job',
       retryingBtn: 'Retrying...',
       retryError: 'Could not retry the job',
+      tabOverview: 'Overview',
+      tabPayload: 'Payload',
+      tabTimeline: 'Timeline',
+      tabError: 'Error',
+      tabRetries: 'Retries',
     },
     // Create Job View
     createJob: {
@@ -236,6 +241,11 @@ export const translations = {
       retryBtn: 'Reintentar Trabajo',
       retryingBtn: 'Reintentando...',
       retryError: 'No se pudo reintentar el trabajo',
+      tabOverview: 'Resumen',
+      tabPayload: 'Payload',
+      tabTimeline: 'Línea de Tiempo',
+      tabError: 'Error',
+      tabRetries: 'Reintentos',
     },
     // Create Job View
     createJob: {
