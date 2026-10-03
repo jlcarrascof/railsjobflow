@@ -98,6 +98,9 @@ export const translations = {
       tabTimeline: 'Timeline',
       tabError: 'Error',
       tabRetries: 'Retries',
+      actionsTitle: 'Actions',
+      cancelHelpText: 'This will cancel the job and prevent it from running.',
+      retryHelpText: 'This will reset the job and put it back in the queue as pending.',
     },
     // Create Job View
     createJob: {
@@ -250,6 +253,9 @@ export const translations = {
       tabTimeline: 'Línea de Tiempo',
       tabError: 'Error',
       tabRetries: 'Reintentos',
+      actionsTitle: 'Acciones',
+      cancelHelpText: 'Esto cancelará el trabajo y evitará que se ejecute.',
+      retryHelpText: 'Esto reiniciará el trabajo y lo pondrá de nuevo en la cola como pendiente.',
     },
     // Create Job View
     createJob: {

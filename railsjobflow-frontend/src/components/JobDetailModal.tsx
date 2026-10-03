@@ -226,42 +226,51 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
           )}
 
           {/* Actions */}
-          {(job.status === 'pending' || job.status === 'running') && (
-            <div>
-              <button
-                type="button"
-                onClick={handleCancel}
-                disabled={isCancelling || job.status === 'running'}
-                title={job.status === 'running' ? t.jobDetail.cancelOnlyPending : undefined}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
-              >
-                <Ban className="w-3.5 h-3.5" />
-                {isCancelling ? t.jobDetail.cancellingBtn : t.jobDetail.cancelBtn}
-              </button>
-              {job.status === 'running' && (
-                <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
-                  {t.jobDetail.cancelOnlyPending}
-                </p>
-              )}
-              {cancelError && (
-                <p className="text-rose-500 text-[11px] mt-2 text-center">{cancelError}</p>
-              )}
-            </div>
-          )}
+          {(job.status === 'pending' || job.status === 'running' || job.status === 'failed') && (
+            <div className="p-4 rounded-xl border border-gray-200/70 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-800/30">
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                {t.jobDetail.actionsTitle}
+              </h4>
 
-          {job.status === 'failed' && (
-            <div>
-              <button
-                type="button"
-                onClick={handleRetry}
-                disabled={isRetrying}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                {isRetrying ? t.jobDetail.retryingBtn : t.jobDetail.retryBtn}
-              </button>
-              {retryError && (
-                <p className="text-rose-500 text-[11px] mt-2 text-center">{retryError}</p>
+              {(job.status === 'pending' || job.status === 'running') && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={isCancelling || job.status === 'running'}
+                    title={job.status === 'running' ? t.jobDetail.cancelOnlyPending : undefined}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    <Ban className="w-3.5 h-3.5" />
+                    {isCancelling ? t.jobDetail.cancellingBtn : t.jobDetail.cancelBtn}
+                  </button>
+                  <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
+                    {job.status === 'running' ? t.jobDetail.cancelOnlyPending : t.jobDetail.cancelHelpText}
+                  </p>
+                  {cancelError && (
+                    <p className="text-rose-500 text-[11px] mt-2 text-center">{cancelError}</p>
+                  )}
+                </div>
+              )}
+
+              {job.status === 'failed' && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleRetry}
+                    disabled={isRetrying}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    {isRetrying ? t.jobDetail.retryingBtn : t.jobDetail.retryBtn}
+                  </button>
+                  <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
+                    {t.jobDetail.retryHelpText}
+                  </p>
+                  {retryError && (
+                    <p className="text-rose-500 text-[11px] mt-2 text-center">{retryError}</p>
+                  )}
+                </div>
               )}
             </div>
           )}
