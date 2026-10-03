@@ -54,7 +54,7 @@ export const SettingsView: React.FC = () => {
             </div>
           </div>
           <code className="text-xs font-mono px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-gray-200 dark:border-gray-700">
-            http://localhost:3001
+            {import.meta.env.VITE_API_URL || 'http://localhost:3000'}
           </code>
         </div>
 
