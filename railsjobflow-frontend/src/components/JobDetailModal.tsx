@@ -218,10 +218,24 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
           )}
 
           {activeTab === 'retries' && (
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 font-mono font-semibold text-gray-600 dark:text-gray-400">
-                {t.jobDetail.retriesLabel}: {job.retries} / {job.max_retries}
-              </span>
+            <div>
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5">
+                {t.jobDetail.tabRetries}
+              </h4>
+              <dl className="space-y-2 text-[11px]">
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">{t.jobDetail.retriesLabel}</dt>
+                  <dd className="font-mono font-semibold text-gray-700 dark:text-gray-300">{job.retries}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">{t.jobDetail.maxRetriesLabel}</dt>
+                  <dd className="font-mono font-semibold text-gray-700 dark:text-gray-300">{job.max_retries}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">{t.jobDetail.lastFailedAtLabel}</dt>
+                  <dd className="font-mono font-semibold text-gray-700 dark:text-gray-300">{formatDate(job.failed_at)}</dd>
+                </div>
+              </dl>
             </div>
           )}
 
