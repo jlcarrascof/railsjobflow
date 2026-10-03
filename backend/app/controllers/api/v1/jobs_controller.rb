@@ -82,6 +82,8 @@ module Api
       end
 
       def serialize_job(job)
+        api_client = job.api_client_id.present? ? ApiClient.where(id: job.api_client_id).first : nil
+
         {
           id: job.id.to_s,
           title: job.title,
@@ -95,7 +97,8 @@ module Api
           created_at: job.created_at&.iso8601,
           started_at: job.started_at&.iso8601,
           completed_at: job.completed_at&.iso8601,
-          failed_at: job.failed_at&.iso8601
+          failed_at: job.failed_at&.iso8601,
+          api_client_name: api_client&.name
         }
       end
     end

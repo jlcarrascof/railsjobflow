@@ -18,12 +18,22 @@ const TIMELINE_ICONS: Record<string, React.ElementType> = {
   failed: XCircle,
 };
 
+const TIMELINE_COLORS: Record<string, string> = {
+  created: 'text-blue-600 dark:text-blue-400',
+  started: 'text-amber-500 dark:text-amber-400',
+  completed: 'text-emerald-600 dark:text-emerald-400',
+  failed: 'text-rose-600 dark:text-rose-400',
+};
+
+type DetailTab = 'overview' | 'payload' | 'timeline' | 'error' | 'retries';
+
 export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProps) {
   const { t, language } = useLanguage();
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryError, setRetryError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<DetailTab>('overview');
 
   if (!job) return null;
 
@@ -101,119 +111,187 @@ export function JobDetailModal({ job, onClose, onCancelled }: JobDetailModalProp
           </button>
         </div>
 
-        <div className="p-5 space-y-5 text-xs">
-          {/* Status + quick stats */}
-          <div className="flex flex-wrap items-center gap-2">
-            <JobStatusBadge status={job.status as JobStatus} />
-            <span className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 font-mono font-semibold text-gray-600 dark:text-gray-400">
-              {t.jobDetail.retriesLabel}: {job.retries} / {job.max_retries}
-            </span>
-            {job.duration_ms !== null && job.duration_ms !== undefined && (
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 font-mono font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {t.jobDetail.durationLabel}: {job.duration_ms} ms
-              </span>
-            )}
-          </div>
+        {/* Tabs */}
+        <div className="flex items-center gap-4 px-5 border-b border-gray-100 dark:border-gray-800 overflow-x-auto">
+          {([
+            ['overview', t.jobDetail.tabOverview],
+            ['payload', t.jobDetail.tabPayload],
+            ['timeline', t.jobDetail.tabTimeline],
+            ['error', t.jobDetail.tabError],
+            ['retries', t.jobDetail.tabRetries],
+          ] as [DetailTab, string][]).map(([tab, label]) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? 'border-rose-600 text-rose-600 dark:text-rose-400'
+                  : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-          {job.idempotency_key && (
-            <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-mono text-[11px]">
-              <KeyRound className="w-3.5 h-3.5 text-amber-500/80 shrink-0" />
-              <span>{t.jobDetail.idempotencyKey}:</span>
-              <span className="text-gray-700 dark:text-gray-300">{job.idempotency_key}</span>
+        <div className="p-5 space-y-5 text-xs">
+          {activeTab === 'overview' && (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <JobStatusBadge status={job.status as JobStatus} />
+                {job.duration_ms !== null && job.duration_ms !== undefined && (
+                  <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 font-mono font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {t.jobDetail.durationLabel}: {job.duration_ms} ms
+                  </span>
+                )}
+              </div>
+
+              {job.idempotency_key && (
+                <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-mono text-[11px]">
+                  <KeyRound className="w-3.5 h-3.5 text-amber-500/80 shrink-0" />
+                  <span>{t.jobDetail.idempotencyKey}:</span>
+                  <span className="text-gray-700 dark:text-gray-300">{job.idempotency_key}</span>
+                </div>
+              )}
+
+              {job.api_client_name && (
+                <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-[11px]">
+                  <span>{t.jobDetail.apiClientLabel}:</span>
+                  <span className="text-rose-600 dark:text-rose-400 font-semibold">{job.api_client_name}</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-mono text-[11px]">
+                <span>{t.jobDetail.workerLabel}:</span>
+                <span className="text-gray-700 dark:text-gray-300">WorkflowWorker</span>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'timeline' && (
+            <div>
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5">
+                {t.jobDetail.timelineTitle}
+              </h4>
+              <ol className="space-y-3 border-l-2 border-gray-200 dark:border-gray-800 pl-4">
+                {timelineSteps.map((step) => {
+                  const Icon = TIMELINE_ICONS[step.iconKey];
+                  const reached = Boolean(step.value);
+                  return (
+                    <li key={step.key} className="relative">
+                      <Icon
+                        className={`w-3.5 h-3.5 absolute -left-[21px] top-0.5 ${
+                          reached ? TIMELINE_COLORS[step.iconKey] : 'text-gray-300 dark:text-gray-700'
+                        }`}
+                      />
+                      <p className={`font-semibold ${reached ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600'}`}>
+                        {step.label}
+                      </p>
+                      <p className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
+                        {formatDate(step.value)}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
           )}
 
-          {/* Timeline */}
-          <div>
-            <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5">
-              {t.jobDetail.timelineTitle}
-            </h4>
-            <ol className="space-y-3 border-l-2 border-gray-200 dark:border-gray-800 pl-4">
-              {timelineSteps.map((step) => {
-                const Icon = TIMELINE_ICONS[step.iconKey];
-                const reached = Boolean(step.value);
-                return (
-                  <li key={step.key} className="relative">
-                    <Icon
-                      className={`w-3.5 h-3.5 absolute -left-[21px] top-0.5 ${
-                        reached ? 'text-blue-600 dark:text-blue-400' : 'text-gray-300 dark:text-gray-700'
-                      }`}
-                    />
-                    <p className={`font-semibold ${reached ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600'}`}>
-                      {step.label}
-                    </p>
-                    <p className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
-                      {formatDate(step.value)}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-
-          {/* Error message */}
-          {job.error_message && (
+          {activeTab === 'error' && (
             <div>
               <h4 className="font-bold text-[11px] uppercase tracking-wider text-rose-500 mb-2 flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 {t.jobDetail.errorTitle}
               </h4>
               <p className="font-mono bg-rose-50/80 dark:bg-rose-950/40 p-3 rounded-lg border border-rose-200/60 dark:border-rose-900/60 text-rose-600 dark:text-rose-400">
-                {job.error_message}
+                {job.error_message || t.jobDetail.notReached}
               </p>
             </div>
           )}
 
-          {/* Payload */}
-          <div>
-            <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
-              {t.jobDetail.payloadTitle}
-            </h4>
-            <pre className="font-mono bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200/60 dark:border-gray-700/60 text-gray-700 dark:text-gray-300 overflow-x-auto whitespace-pre-wrap break-all">
-              {Object.keys(job.payload || {}).length > 0
-                ? JSON.stringify(job.payload, null, 2)
-                : t.jobDetail.noPayload}
-            </pre>
-          </div>
-
-          {/* Actions */}
-          {(job.status === 'pending' || job.status === 'running') && (
+          {activeTab === 'payload' && (
             <div>
-              <button
-                type="button"
-                onClick={handleCancel}
-                disabled={isCancelling || job.status === 'running'}
-                title={job.status === 'running' ? t.jobDetail.cancelOnlyPending : undefined}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
-              >
-                <Ban className="w-3.5 h-3.5" />
-                {isCancelling ? t.jobDetail.cancellingBtn : t.jobDetail.cancelBtn}
-              </button>
-              {job.status === 'running' && (
-                <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
-                  {t.jobDetail.cancelOnlyPending}
-                </p>
-              )}
-              {cancelError && (
-                <p className="text-rose-500 text-[11px] mt-2 text-center">{cancelError}</p>
-              )}
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                {t.jobDetail.payloadTitle}
+              </h4>
+              <pre className="font-mono bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200/60 dark:border-gray-700/60 text-gray-700 dark:text-gray-300 overflow-x-auto whitespace-pre-wrap break-all">
+                {Object.keys(job.payload || {}).length > 0
+                  ? JSON.stringify(job.payload, null, 2)
+                  : t.jobDetail.noPayload}
+              </pre>
             </div>
           )}
 
-          {job.status === 'failed' && (
+          {activeTab === 'retries' && (
             <div>
-              <button
-                type="button"
-                onClick={handleRetry}
-                disabled={isRetrying}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                {isRetrying ? t.jobDetail.retryingBtn : t.jobDetail.retryBtn}
-              </button>
-              {retryError && (
-                <p className="text-rose-500 text-[11px] mt-2 text-center">{retryError}</p>
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5">
+                {t.jobDetail.tabRetries}
+              </h4>
+              <dl className="space-y-2 text-[11px]">
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">{t.jobDetail.retriesLabel}</dt>
+                  <dd className="font-mono font-semibold text-gray-700 dark:text-gray-300">{job.retries}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">{t.jobDetail.maxRetriesLabel}</dt>
+                  <dd className="font-mono font-semibold text-gray-700 dark:text-gray-300">{job.max_retries}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">{t.jobDetail.lastFailedAtLabel}</dt>
+                  <dd className="font-mono font-semibold text-gray-700 dark:text-gray-300">{formatDate(job.failed_at)}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
+
+          {/* Actions */}
+          {(job.status === 'pending' || job.status === 'running' || job.status === 'failed') && (
+            <div className="p-4 rounded-xl border border-gray-200/70 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-800/30">
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                {t.jobDetail.actionsTitle}
+              </h4>
+
+              {(job.status === 'pending' || job.status === 'running') && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={isCancelling || job.status === 'running'}
+                    title={job.status === 'running' ? t.jobDetail.cancelOnlyPending : undefined}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    <Ban className="w-3.5 h-3.5" />
+                    {isCancelling ? t.jobDetail.cancellingBtn : t.jobDetail.cancelBtn}
+                  </button>
+                  <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
+                    {job.status === 'running' ? t.jobDetail.cancelOnlyPending : t.jobDetail.cancelHelpText}
+                  </p>
+                  {cancelError && (
+                    <p className="text-rose-500 text-[11px] mt-2 text-center">{cancelError}</p>
+                  )}
+                </div>
+              )}
+
+              {job.status === 'failed' && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleRetry}
+                    disabled={isRetrying}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    {isRetrying ? t.jobDetail.retryingBtn : t.jobDetail.retryBtn}
+                  </button>
+                  <p className="text-gray-400 dark:text-gray-500 text-[11px] mt-2 text-center">
+                    {t.jobDetail.retryHelpText}
+                  </p>
+                  {retryError && (
+                    <p className="text-rose-500 text-[11px] mt-2 text-center">{retryError}</p>
+                  )}
+                </div>
               )}
             </div>
           )}

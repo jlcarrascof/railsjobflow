@@ -1,10 +1,10 @@
 import type { JobStatus } from '@/types';
 
 const STATUS_STYLES: Record<JobStatus, string> = {
-  pending:   'bg-yellow-100 text-yellow-800 border-yellow-200',
-  running:   'bg-blue-100 text-blue-800 border-blue-200 animate-pulse',
-  completed: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  failed:    'bg-rose-100 text-rose-800 border-rose-200',
+  pending:   'bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/40',
+  running:   'bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/40 animate-pulse',
+  completed: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40',
+  failed:    'bg-rose-100 dark:bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/40',
 };
 
 const STATUS_ICONS: Record<JobStatus, string> = {

@@ -80,21 +80,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange }) => 
               key={item.id}
               onClick={() => onTabChange(item.id)}
               type="button"
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+              className={`relative w-full flex items-center justify-between pl-3 pr-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer border-l-[3px] ${
                 isActive
-                  ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/70 hover:text-gray-900 dark:hover:text-gray-200'
+                  ? 'border-rose-600 bg-rose-50/70 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/70 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-400 dark:text-gray-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-rose-600 dark:text-rose-400' : 'text-gray-400 dark:text-gray-500'}`} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
                     isActive
-                      ? 'bg-white/20 text-white'
+                      ? 'bg-rose-600/15 text-rose-700 dark:text-rose-300'
                       : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60'
                   }`}
                 >

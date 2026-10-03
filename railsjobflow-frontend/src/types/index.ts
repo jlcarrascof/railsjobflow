@@ -14,6 +14,7 @@ export interface WorkflowJob {
   started_at: string | null;
   completed_at: string | null;
   failed_at: string | null;
+  api_client_name: string | null;
 }
 
 export interface CreateJobPayload {

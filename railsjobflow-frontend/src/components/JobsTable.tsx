@@ -66,13 +66,13 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs, pagination, onPageCh
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search Input */}
           <div className="relative min-w-[240px]">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.header.searchPlaceholder}
-              className="w-full pl-9 pr-3.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              className="w-full pl-9 pr-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-xs text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-rose-500 dark:focus:ring-rose-400 transition-all"
             />
           </div>
 
@@ -86,7 +86,7 @@ export const JobsTable: React.FC<JobsTableProps> = ({ jobs, pagination, onPageCh
                 onClick={() => setSelectedStatus(f.id)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer select-none ${
                   selectedStatus === f.id
-                    ? 'bg-blue-600 text-white shadow-2xs'
+                    ? 'bg-rose-600 text-white shadow-2xs'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
